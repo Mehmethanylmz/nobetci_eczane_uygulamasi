@@ -26,14 +26,26 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _getPharmacyData() async {
-    _pharmacy = await PharmacyService().getPharmacyData(
-        selectedValue!.name.toString(), selectedCity!.name.toString());
+    _pharmacy = await PharmacyService()
+        .getPharmacyData(selectedValue!.name, selectedCity!.name);
     setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text(
+          "Nöbetçi Eczane",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        leading: Image.asset(
+          "assets/images/drugstore.png",
+        ),
+        centerTitle: true,
+        backgroundColor: Colors.red[200],
+        leadingWidth: 50,
+      ),
       body: Column(
         children: [
           Padding(
@@ -46,24 +58,28 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _pharmacy.length,
-              itemBuilder: (context, index) {
-                final PharmacyModel pharmacy = _pharmacy[index];
-                return Container(
-                  padding: const EdgeInsets.all(20),
-                  margin: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey.shade100,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(pharmacy.name),
-                );
-              },
-            ),
-          ),
+          detailsListView(),
         ],
+      ),
+    );
+  }
+
+  Expanded detailsListView() {
+    return Expanded(
+      child: ListView.builder(
+        itemCount: _pharmacy.length,
+        itemBuilder: (context, index) {
+          final PharmacyModel pharmacy = _pharmacy[index];
+          return Container(
+            padding: const EdgeInsets.all(20),
+            margin: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              color: Colors.blueGrey.shade100,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(pharmacy.name),
+          );
+        },
       ),
     );
   }
