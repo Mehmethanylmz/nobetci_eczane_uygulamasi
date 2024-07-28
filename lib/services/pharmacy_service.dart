@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:nobetcieczane/models/pharmacy_model.dart';
 
-class PharmacyService {
+class PharmacyService extends ChangeNotifier {
   Future<List<PharmacyModel>> getPharmacyData(String il, String ilce) async {
     String url =
         "https://api.collectapi.com/health/dutyPharmacy?ilce=$ilce&il=$il";
