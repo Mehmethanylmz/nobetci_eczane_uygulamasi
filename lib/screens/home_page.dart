@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:nobetcieczane/models/enums.dart';
 import 'package:nobetcieczane/models/pharmacy_model.dart';
-import 'package:nobetcieczane/services/pharmacy_service.dart';
+import 'package:nobetcieczane/models/pharmacy_provider.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,24 +12,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<PharmacyModel> _pharmacy = [];
-  City? selectedCity;
-  Iller? selectedValue;
-  List<City> _city = [];
 
-  void _getCity(String city) async {
-    _city.clear;
-    selectedCity = null;
-    setState(() {});
-    _city = await PharmacyService().getCities(city);
+  District? selectedDist;
+  Cities? selectedCity;
 
-    setState(() {});
-  }
-
-  void _getPharmacyData() async {
-    _pharmacy = await PharmacyService()
-        .getPharmacyData(selectedValue!.name, selectedCity!.name);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,25 +38,9 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                ilFormField(),
+                cityFormField(),
                 const SizedBox(height: 10.0),
-                DropdownButtonFormField(
-                  value: selectedCity,
-                  items: _city.map((City city) {
-                    return DropdownMenuItem<City>(
-                      value: city,
-                      child: Text(city.name),
-                    );
-                  }).toList(),
-                  onChanged: (City? newValue) {
-                    selectedCity = newValue!;
-                    _getPharmacyData();
-                  },
-                  decoration: const InputDecoration(
-                    labelText: 'İlçe seçiniz..',
-                    border: OutlineInputBorder(),
-                  ),
-                ),
+               districtFormField()
               ],
             ),
           ),
@@ -80,13 +50,34 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  Consumer<PharmacyProvider> districtFormField() {
+    return Consumer<PharmacyProvider>(builder: (context, value, child) =>  DropdownButtonFormField(
+                value: selectedDist,
+                items: value.districts.map((District city) {
+                  return DropdownMenuItem<District>(
+                    value: city,
+                    child: Text(city.distName),
+                  );
+                }).toList(),
+                onChanged: (District? newValue) {
+                  selectedDist = newValue!;
+                  value.setPharmacyData(selectedCity!.name,newValue.distName);
+                  
+                },
+                decoration: const InputDecoration(
+                  labelText: 'İlçe seçiniz..',
+                  border: OutlineInputBorder(),
+                ),
+              ),);
+  }
+
   Expanded detailsListView() {
     return Expanded(
-        child: Consumer<PharmacyService>(
+        child: Consumer<PharmacyProvider>(
       builder: (context, value, child) => ListView.builder(
-        itemCount: _pharmacy.length,
+        itemCount: value.pharmacy.length,
         itemBuilder: (context, index) {
-          final PharmacyModel pharmacy = _pharmacy[index];
+          final PharmacyInformation pharmacy = value.pharmacy[index];
           return Container(
             padding: const EdgeInsets.all(20),
             margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -110,17 +101,21 @@ class _HomePageState extends State<HomePage> {
     ));
   }
 
-  DropdownButtonFormField<Iller> ilFormField() {
-    return DropdownButtonFormField<Iller>(
-      items: Iller.values.map((Iller il) {
-        return DropdownMenuItem<Iller>(
-          value: il,
-          child: Text(il.name),
+  DropdownButtonFormField<Cities> cityFormField() {
+    return DropdownButtonFormField<Cities>(
+      items: Cities.values.map((Cities city) {
+        return DropdownMenuItem<Cities>(
+          value: city,
+          child: Text(city.name),
         );
       }).toList(),
-      onChanged: (Iller? newValue) async {
-        selectedValue = newValue;
-        _getCity(newValue!.name);
+      onChanged: (Cities? newValue) async {
+        selectedDist=null;
+        Provider.of<PharmacyProvider>(context, listen: false) 
+            .setDistricts(newValue!.name);
+          selectedCity  = newValue;
+        PharmacyProvider().setDistricts(newValue.name);
+        
       },
       decoration: const InputDecoration(
         labelText: 'İl Seçiniz',

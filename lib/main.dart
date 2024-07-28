@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:nobetcieczane/models/pharmacy_provider.dart';
 import 'package:nobetcieczane/screens/home_page.dart';
-import 'package:nobetcieczane/services/pharmacy_service.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -8,7 +8,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => PharmacyService(),
+          create: (context) => PharmacyProvider(),
         )
       ],
       child: const Home(),

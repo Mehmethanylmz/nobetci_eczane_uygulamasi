@@ -1,13 +1,13 @@
-class PharmacyModel {
+class PharmacyInformation {
   final String name;
   final String dist;
   final String address;
   final String phone;
   final String loc;
 
-  PharmacyModel(this.name, this.dist, this.address, this.phone, this.loc);
+  PharmacyInformation(this.name, this.dist, this.address, this.phone, this.loc);
 
-  PharmacyModel.fromJson(Map<String, dynamic> json)
+  PharmacyInformation.fromJson(Map<String, dynamic> json)
       : name = json['name'],
         dist = json['dist'],
         address = json['address'],
@@ -15,10 +15,10 @@ class PharmacyModel {
         loc = json['loc'];
 }
 
-class City {
-  final String name;
+class District {
+  final String distName;
 
-  City(this.name);
+  District(this.distName);
 
-  City.fromJson(Map<String, dynamic> json) : name = json['text'];
+  District.fromJson(Map<String, dynamic> json) : distName = json['text'];
 }

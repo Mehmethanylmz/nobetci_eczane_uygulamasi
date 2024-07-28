@@ -1,11 +1,10 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:nobetcieczane/models/pharmacy_model.dart';
 
-class PharmacyService extends ChangeNotifier {
-  Future<List<PharmacyModel>> getPharmacyData(String il, String ilce) async {
+class PharmacyService {
+  Future<List<PharmacyInformation>> getPharmacyData(String city, String district) async {
     String url =
-        "https://api.collectapi.com/health/dutyPharmacy?ilce=$ilce&il=$il";
+        "https://api.collectapi.com/health/dutyPharmacy?ilce=$district&il=$city";
     const Map<String, dynamic> headers = {
       "authorization": "apikey 3Ejs8Suwg2Nu69HHjDv8Ns:5ps4YoTJhEIYaqrnTzhStp",
       "content-type": "application/json"
@@ -16,12 +15,12 @@ class PharmacyService extends ChangeNotifier {
       return Future.error("Bir sorun oluştu");
     }
     final List list = response.data['result'];
-    final List<PharmacyModel> pharmacyList =
-        list.map((e) => PharmacyModel.fromJson(e)).toList();
+    final List<PharmacyInformation> pharmacyList =
+        list.map((e) => PharmacyInformation.fromJson(e)).toList();
     return pharmacyList;
   }
 
-  Future<List<City>> getCities(String city) async {
+  Future<List<District>> getDistricts(String city) async {
     String url = "https://api.collectapi.com/health/districtList?il=$city";
     const Map<String, dynamic> headers = {
       "authorization": "apikey 3Ejs8Suwg2Nu69HHjDv8Ns:5ps4YoTJhEIYaqrnTzhStp",
@@ -32,8 +31,9 @@ class PharmacyService extends ChangeNotifier {
     if (response.statusCode != 200) {
       return Future.error("Bir sorun oluştu");
     }
-    final List lst = response.data['result'];
-    final List<City> cityList = lst.map((e) => City.fromJson(e)).toList();
+    final List list = response.data['result'];
+    final List<District> cityList = list.map((e) => District.fromJson(e)).toList();
     return cityList;
+    
   }
 }

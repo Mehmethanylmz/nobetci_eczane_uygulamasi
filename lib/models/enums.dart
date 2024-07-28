@@ -1,4 +1,4 @@
-enum Iller {
+enum Cities {
   adana("Adana"),
   adiyaman("Adıyaman"),
   afyonkarahisar("Afyonkarahisar"),
@@ -83,5 +83,5 @@ enum Iller {
 
   final String name;
 
-  const Iller(this.name);
+  const Cities(this.name);
 }

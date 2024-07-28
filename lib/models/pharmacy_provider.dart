@@ -4,29 +4,51 @@ import 'package:nobetcieczane/models/pharmacy_model.dart';
 
 import '../services/pharmacy_service.dart';
 
-class PharmacyProvider with ChangeNotifier {
-  List<PharmacyModel> _pharmacy = [];
-  City? selectedCity;
-  Iller? selectedValue;
+class PharmacyProvider extends ChangeNotifier {
+ List<PharmacyInformation> pharmacy = [];
+  List<District> districts = [];
+ 
+  
 
-  PharmacyService pharmacyService = PharmacyService(); // Initialize service
-
-  Future<void> getCities(String city) async {
-    selectedCity = null;
-    _pharmacy.clear();
+  void setDistricts(String city) async {
+    districts.clear();
+    districts = await PharmacyService().getDistricts(city);
     notifyListeners();
-
-    pharmacyService.getCities(city).then((cities) {
-      _pharmacy = cities;
-      notifyListeners();
-    });
   }
 
-  Future<void> getPharmacyData() async {
-    if (selectedValue != null && selectedCity != null) {
-      _pharmacy = await pharmacyService.getPharmacyData(
-          selectedValue!.name, selectedCity!.name);
-      notifyListeners();
-    }
+  void setPharmacyData(String city, String distinc) async {
+    pharmacy = await PharmacyService()
+        .getPharmacyData(city, distinc);
+        notifyListeners();
   }
+
+
+
+
+
+  // List<PharmacyInformation> _pharmacy = [];
+  // District? selectedCity;
+  // Cities? selectedValue;
+
+  // PharmacyService pharmacyService = PharmacyService(); // Initialize service
+
+  //  Future<void>getCities( String city) async {
+  //   selectedCity = null;
+  //   _pharmacy.clear();
+  //   notifyListeners();
+  //   //List<District> cities = await pharmacyService.getDistricts(city);
+
+  //   pharmacyService.getDistricts(city).then((cities) {
+  //     //_pharmacy = cities;
+  //     notifyListeners();
+  //   });
+  // }
+
+  // Future<void> getPharmacyData() async {
+  //   if (selectedValue != null && selectedCity != null) {
+  //     _pharmacy = await pharmacyService.getPharmacyData(
+  //         selectedValue!.name, selectedCity!.distName);
+  //     notifyListeners();
+  //   }
+  // }
 }
