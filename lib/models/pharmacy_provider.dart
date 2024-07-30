@@ -1,30 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:nobetcieczane/models/enums.dart';
 import 'package:nobetcieczane/models/pharmacy_model.dart';
 
 import '../services/pharmacy_service.dart';
 
 class PharmacyProvider extends ChangeNotifier {
- List<PharmacyInformation> pharmacy = [];
+  List<PharmacyInformation> pharmacy = [];
   List<District> districts = [];
- 
-  
 
   void setDistricts(String city) async {
+    pharmacy.clear();
     districts.clear();
     districts = await PharmacyService().getDistricts(city);
     notifyListeners();
   }
 
   void setPharmacyData(String city, String distinc) async {
-    pharmacy = await PharmacyService()
-        .getPharmacyData(city, distinc);
-        notifyListeners();
+    pharmacy = await PharmacyService().getPharmacyData(city, distinc);
+    print("${pharmacy[0].loc}adrss : ${pharmacy[0].address}");
+    notifyListeners();
   }
-
-
-
-
 
   // List<PharmacyInformation> _pharmacy = [];
   // District? selectedCity;

@@ -1,7 +1,10 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:nobetcieczane/models/enums.dart';
 import 'package:nobetcieczane/models/pharmacy_model.dart';
 import 'package:nobetcieczane/models/pharmacy_provider.dart';
+import 'package:nobetcieczane/services/pharmacy_service.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,24 +15,23 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   District? selectedDist;
   Cities? selectedCity;
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Nöbetçi Eczane",
-          style: TextStyle(fontWeight: FontWeight.bold),
+          "NÖBETÇİ ECZANE",
+          style: TextStyle(
+              fontWeight: FontWeight.bold, color: Colors.white, fontSize: 28),
         ),
         leading: Image.asset(
           "assets/images/drugstore.png",
         ),
         centerTitle: true,
-        backgroundColor: Colors.red[200],
+        backgroundColor: Colors.red.shade700,
         leadingWidth: 50,
       ),
       body: Column(
@@ -40,7 +42,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 cityFormField(),
                 const SizedBox(height: 10.0),
-               districtFormField()
+                districtFormField()
               ],
             ),
           ),
@@ -48,27 +50,6 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
-  }
-
-  Consumer<PharmacyProvider> districtFormField() {
-    return Consumer<PharmacyProvider>(builder: (context, value, child) =>  DropdownButtonFormField(
-                value: selectedDist,
-                items: value.districts.map((District city) {
-                  return DropdownMenuItem<District>(
-                    value: city,
-                    child: Text(city.distName),
-                  );
-                }).toList(),
-                onChanged: (District? newValue) {
-                  selectedDist = newValue!;
-                  value.setPharmacyData(selectedCity!.name,newValue.distName);
-                  
-                },
-                decoration: const InputDecoration(
-                  labelText: 'İlçe seçiniz..',
-                  border: OutlineInputBorder(),
-                ),
-              ),);
   }
 
   Expanded detailsListView() {
@@ -93,12 +74,66 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ]),
             alignment: Alignment.center,
-            child: Text(
-                "${pharmacy.name}\n${pharmacy.address}  ${pharmacy.phone}  ${pharmacy.loc}"),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "ECZANE ${pharmacy.name}",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 25,
+                        color: Colors.red.shade700),
+                  ),
+                  const SizedBox(height: 8),
+                  Text("Adres: ${pharmacy.address}"),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Tel: ${pharmacy.phone}"),
+                      TextButton(
+                        onPressed: () {
+                          PharmacyService().openGoogleMaps(pharmacy.loc);
+                        },
+                        child: Text(
+                          'Haritada Göster',
+                          style: TextStyle(
+                            color: Colors.red.shade700,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
           );
         },
       ),
     ));
+  }
+
+  Consumer<PharmacyProvider> districtFormField() {
+    return Consumer<PharmacyProvider>(
+      builder: (context, value, child) => DropdownButtonFormField(
+        value: selectedDist,
+        items: value.districts.map((District city) {
+          return DropdownMenuItem<District>(
+            value: city,
+            child: Text(city.distName),
+          );
+        }).toList(),
+        onChanged: (District? newValue) {
+          selectedDist = newValue!;
+          value.setPharmacyData(selectedCity!.name, newValue.distName);
+        },
+        decoration: const InputDecoration(
+          labelText: 'İlçe seçiniz..',
+          border: OutlineInputBorder(),
+        ),
+      ),
+    );
   }
 
   DropdownButtonFormField<Cities> cityFormField() {
@@ -110,12 +145,11 @@ class _HomePageState extends State<HomePage> {
         );
       }).toList(),
       onChanged: (Cities? newValue) async {
-        selectedDist=null;
-        Provider.of<PharmacyProvider>(context, listen: false) 
+        selectedDist = null;
+        Provider.of<PharmacyProvider>(context, listen: false)
             .setDistricts(newValue!.name);
-          selectedCity  = newValue;
+        selectedCity = newValue;
         PharmacyProvider().setDistricts(newValue.name);
-        
       },
       decoration: const InputDecoration(
         labelText: 'İl Seçiniz',
