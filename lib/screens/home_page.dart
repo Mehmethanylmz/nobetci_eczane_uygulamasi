@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:nobetcieczane/models/enums.dart';
 import 'package:nobetcieczane/models/pharmacy_model.dart';
@@ -55,62 +53,65 @@ class _HomePageState extends State<HomePage> {
   Expanded detailsListView() {
     return Expanded(
         child: Consumer<PharmacyProvider>(
-      builder: (context, value, child) => ListView.builder(
-        itemCount: value.pharmacy.length,
-        itemBuilder: (context, index) {
-          final PharmacyInformation pharmacy = value.pharmacy[index];
-          return Container(
-            padding: const EdgeInsets.all(20),
-            margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black54,
-                    blurRadius: 5,
-                    spreadRadius: 1,
-                    offset: Offset(4, 4),
-                  ),
-                ]),
-            alignment: Alignment.center,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "ECZANE ${pharmacy.name}",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25,
-                        color: Colors.red.shade700),
-                  ),
-                  const SizedBox(height: 8),
-                  Text("Adres: ${pharmacy.address}"),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text("Tel: ${pharmacy.phone}"),
-                      TextButton(
-                        onPressed: () {
-                          PharmacyService().openGoogleMaps(pharmacy.loc);
-                        },
-                        child: Text(
-                          'Haritada Göster',
-                          style: TextStyle(
-                            color: Colors.red.shade700,
-                          ),
+      builder: (context, value, child) => value.isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+              itemCount: value.pharmacy.length,
+              itemBuilder: (context, index) {
+                final PharmacyInformation pharmacy = value.pharmacy[index];
+                return Container(
+                  padding: const EdgeInsets.all(20),
+                  margin:
+                      const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black54,
+                          blurRadius: 5,
+                          spreadRadius: 1,
+                          offset: Offset(4, 4),
                         ),
-                      ),
-                    ],
-                  )
-                ],
-              ),
+                      ]),
+                  alignment: Alignment.center,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "ECZANE ${pharmacy.name}",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25,
+                              color: Colors.red.shade700),
+                        ),
+                        const SizedBox(height: 8),
+                        Text("Adres: ${pharmacy.address}"),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Tel: ${pharmacy.phone}"),
+                            TextButton(
+                              onPressed: () {
+                                PharmacyService().openGoogleMaps(pharmacy.loc);
+                              },
+                              child: Text(
+                                'Haritada Göster',
+                                style: TextStyle(
+                                  color: Colors.red.shade700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
-      ),
     ));
   }
 
@@ -126,7 +127,7 @@ class _HomePageState extends State<HomePage> {
         }).toList(),
         onChanged: (District? newValue) {
           selectedDist = newValue!;
-          value.setPharmacyData(selectedCity!.name, newValue.distName);
+          value.fetchPharmacyData(selectedCity!.name, newValue.distName);
         },
         decoration: const InputDecoration(
           labelText: 'İlçe seçiniz..',
@@ -147,9 +148,8 @@ class _HomePageState extends State<HomePage> {
       onChanged: (Cities? newValue) async {
         selectedDist = null;
         Provider.of<PharmacyProvider>(context, listen: false)
-            .setDistricts(newValue!.name);
+            .fetchDistricts(newValue!.name);
         selectedCity = newValue;
-        PharmacyProvider().setDistricts(newValue.name);
       },
       decoration: const InputDecoration(
         labelText: 'İl Seçiniz',

@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:nobetcieczane/models/pharmacy_model.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class PharmacyService {
@@ -46,6 +46,7 @@ class PharmacyService {
     final String googleWebMapsUrl =
         'https://www.google.com/search?q=${Uri.encodeComponent(url)}';
     try {
+      debugPrint(googleWebMapsUrl);
       return launchUrlString(googeMapsUrl);
     } catch (e) {
       return false;

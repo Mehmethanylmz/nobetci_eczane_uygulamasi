@@ -4,20 +4,36 @@ import 'package:nobetcieczane/models/pharmacy_model.dart';
 import '../services/pharmacy_service.dart';
 
 class PharmacyProvider extends ChangeNotifier {
+  bool isLoading = false;
   List<PharmacyInformation> pharmacy = [];
   List<District> districts = [];
 
-  void setDistricts(String city) async {
+  void fetchDistricts(String city) async {
+    isLoading = true;
     pharmacy.clear();
     districts.clear();
-    districts = await PharmacyService().getDistricts(city);
     notifyListeners();
+    try {
+      districts = await PharmacyService().getDistricts(city);
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
-  void setPharmacyData(String city, String distinc) async {
-    pharmacy = await PharmacyService().getPharmacyData(city, distinc);
-    print("${pharmacy[0].loc}adrss : ${pharmacy[0].address}");
+  void fetchPharmacyData(String city, String distinc) async {
+    isLoading = true;
     notifyListeners();
+    try {
+      pharmacy = await PharmacyService().getPharmacyData(city, distinc);
+    } catch (e) {
+      debugPrint(e.toString());
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
   // List<PharmacyInformation> _pharmacy = [];
