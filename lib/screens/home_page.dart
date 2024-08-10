@@ -38,9 +38,9 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                cityFormField(),
+                cityDropDown(),
                 const SizedBox(height: 10.0),
-                districtFormField()
+                districtDropDown()
               ],
             ),
           ),
@@ -115,7 +115,7 @@ class _HomePageState extends State<HomePage> {
     ));
   }
 
-  Consumer<PharmacyProvider> districtFormField() {
+  Consumer<PharmacyProvider> districtDropDown() {
     return Consumer<PharmacyProvider>(
       builder: (context, value, child) => DropdownButtonFormField(
         value: selectedDist,
@@ -137,7 +137,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  DropdownButtonFormField<Cities> cityFormField() {
+  DropdownButtonFormField<Cities> cityDropDown() {
     return DropdownButtonFormField<Cities>(
       items: Cities.values.map((Cities city) {
         return DropdownMenuItem<Cities>(
